@@ -26,7 +26,10 @@
         <script>
             let pantalla = document.getElementById("lienzo");
             let pincel = pantalla.getContext("2d");
-            let paletaColores = ["#E0BBE4","#957DAD","#D291BC","#FEC8D8","#FFDFD3"];
+            // Sólo se tiene que añadir el código de color deseado para que se genere en la paleta de colores
+            // Sin embargo, no generará más de 15, debido al tamaño del canvas
+            // Las paletas fueron obtenidas de: https://colorhunt.co/
+            let paletaColores = ["#E0BBE4","#957DAD","#D291BC","#FEC8D8","#FFDFD3","#002B5B","#2B4865","#256D85","#8FE3CF","#00FFAB","#14C38E","#B8F1B0","#E3FCBF"];
             let indiceColor = 0;
             let puedoDibujar = false;
 
@@ -49,30 +52,34 @@
                     pincel.fillStyle = paletaColores[i];
                     pincel.fillRect(x,0,40,60);
                     pincel.fill();
-                    pincel.strokeStyle = "darkgrey";
+                    pincel.strokeStyle = "darkgray";
                     pincel.strokeRect(x,0,40,60);
                     x += 40;
                 }
             }
 
             // Cambiar el color del pincel al clickar en la paleta correspondiente
-            const cambiarColor = (evento) => {
+            const seleccionarColor = (evento) => {
                 let x = evento.pageX - pantalla.offsetLeft;
                 let y = evento.pageY - pantalla.offsetTop;
                 let ancho = 0;
 
                 for(let i = 0; i < paletaColores.length; i++) {
-                    if((x > ancho) && (x < ancho+40) && y > 0 && y < 60) indiceColor = i;
+                    if((x > ancho) && 
+                    (x < ancho+40) && 
+                    y > 0 && 
+                    y < 60) 
+                    indiceColor = i;
                     ancho += 40;
                 }
             }
 
-            // Iniciar y terminar de dibujar
-            //const habilitarDibujar = () => puedoDibujar = true;
+            // Funciones para iniciar y terminar de dibujar
+            //const habilitarDibujar = () => puedoDibujar = true; // Sustituída por aquella que evita tomar como área de dibujo la paleta de colores
 
             const deshabilitarDibujar = () => puedoDibujar = false;
 
-            // Bloquear dibujar sobre la paleta de colores
+            // Bloquear iniciar el dibujo sobre la paleta de colores
             const limitarAreaDeDibujo = (evento) => {
                 let x = evento.pageX - pantalla.offsetLeft;
                 let y = evento.pageY - pantalla.offsetTop;
@@ -84,13 +91,19 @@
                     : puedoDibujar = true
             }
 
+            // Dibuja la paleta de colores en canvas
             dibujarPaletaColores();
-            pantalla.onclick = cambiarColor;
 
+            // Habilita cambiar el color del pincel al clickar sobre la paleta
+            pantalla.onclick = seleccionarColor;
+
+            // Dibuja un círculo con el mouse en movimiento
             pantalla.onmousemove = dibujarCirculo;
 
+            // Inicia el dibujo al oprimir el click validando que no sea sobre la paleta
             pantalla.onmousedown = limitarAreaDeDibujo;
 
+            // Termina el dibujo al soltar el click
             pantalla.onmouseup = deshabilitarDibujar;
 
         </script>

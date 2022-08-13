@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <style>
+        .contenedor {
+        width: 80%;
+        text-align: center;
+        border-radius: 3rem;
+        border-color: darkgray;
+        border-style: solid;
+        margin: 2rem auto;
+    }
+    </style>
+
+    <title>Paint con Javascript</title>
+</head>
+<body>
+    <h1><center>Paint en JS</center></h3>
+    <div class="contenedor" style="border-radius: 0px; width: 600px; height: 400px;">
+        <canvas id="lienzo" width="600" height="400"></canvas>
+        
+        <script>
+            let pantalla = document.getElementById("lienzo");
+            let pincel = pantalla.getContext("2d");
+            let paletaColores = ["#E0BBE4","#957DAD","#D291BC","#FEC8D8","#FFDFD3"];
+            let indiceColor = 0;
+            let puedoDibujar = false;
+
+            // Función para crear la paleta de colores, para agregar uno nuevo basta con ingresarlo en el arreglo de paletaColores.
+            const dibujarCirculo = (evento) => {
+                if(puedoDibujar) {
+                    let x = evento.pageX - pantalla.offsetLeft;
+                    let y = evento.pageY - pantalla.offsetTop;
+                    pincel.fillStyle = paletaColores[indiceColor];
+                    pincel.beginPath();
+                    pincel.arc(x, y, 5, 0, 2 * 3.14);
+                    pincel.fill();
+                }
+            }
+
+            // Generar paleta de colores y mostrarla en pantalla
+            const dibujarPaletaColores = () => {
+                let x = 0;
+                for(let i= 0; i < paletaColores.length; i++) {
+                    pincel.fillStyle = paletaColores[i];
+                    pincel.fillRect(x,0,40,60);
+                    pincel.fill();
+                    pincel.strokeStyle = "darkgrey";
+                    pincel.strokeRect(x,0,40,60);
+                    x += 40;
+                }
+            }
+
+            // Cambiar el color del pincel al clickar en la paleta correspondiente
+            const cambiarColor = (evento) => {
+                let x = evento.pageX - pantalla.offsetLeft;
+                let y = evento.pageY - pantalla.offsetTop;
+                let ancho = 0;
+
+                for(let i = 0; i < paletaColores.length; i++) {
+                    if((x > ancho) && (x < ancho+40) && y > 0 && y < 60) indiceColor = i;
+                    ancho += 40;
+                }
+            }
+
+            // Iniciar y terminar de dibujar
+            //const habilitarDibujar = () => puedoDibujar = true;
+
+            const deshabilitarDibujar = () => puedoDibujar = false;
+
+            // Bloquear dibujar sobre la paleta de colores
+            const limitarAreaDeDibujo = (evento) => {
+                let x = evento.pageX - pantalla.offsetLeft;
+                let y = evento.pageY - pantalla.offsetTop;
+                (x > 0 &&
+                (x < 40 * paletaColores.length) &&
+                 y > 0 &&
+                 y < 60) 
+                    ? puedoDibujar = false
+                    : puedoDibujar = true
+            }
+
+            dibujarPaletaColores();
+            pantalla.onclick = cambiarColor;
+
+            pantalla.onmousemove = dibujarCirculo;
+
+            pantalla.onmousedown = limitarAreaDeDibujo;
+
+            pantalla.onmouseup = deshabilitarDibujar;
+
+        </script>
+
+    </div>
+</body>
+</html>
